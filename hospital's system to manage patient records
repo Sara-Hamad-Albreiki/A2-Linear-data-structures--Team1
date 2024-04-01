@@ -1,16 +1,17 @@
 from collections import deque
 from datetime import datetime
 
-class ListNode:
+class ListNode: # Initialize a new node for the linked list
     def _init_(self, data=None):
         self.data = data
         self.next = None
 
-class LinkedList:
+class LinkedList: #Initialize an empty linked list
     def _init_(self):
         self.head = None
 
     def append(self, data):
+    #Append a new node containing the given data to the end of the linked list
         if not self.head:
             self.head = ListNode(data)
             print(f"Added new patient: {data.name}")
@@ -22,14 +23,17 @@ class LinkedList:
             print(f"Added new patient: {data.name}")
 
     def find(self, patient_id):
+    #Find a patient with the given ID in the linked list
         current = self.head
         while current:
             if current.data.patient_id == patient_id:
                 return current.data
             current = current.next
         return None
+        #Return patient object if found, else None.
 
     def remove(self, patient_id):
+    #Remove a patient with the ID provided from the linked list
         current = self.head
         prev = None
         while current:
@@ -42,15 +46,20 @@ class LinkedList:
             prev = current
             current = current.next
         return False
+        # return True if the patient was removed, False otherwise.
 
 class Patient:
     def _init_(self, patient_id, name, age, medical_history, current_condition, admission_date=None):
-        self.patient_id = patient_id
+        #Initialize a new patient
+        self.patient_id = patient_id 
+#the unique ID for the patient.
         self.name = name
         self.age = age
         self.medical_history = medical_history
         self.current_condition = current_condition
+#Current health condition of the patient
         self.admission_date = admission_date if admission_date else datetime.now()
+#The admission date can be entered optionally, and if left blank, it will default to the current date
         self.prescriptions = []
         self.appointments = []
         self.status = "Active"
@@ -58,26 +67,37 @@ class Patient:
 
 class Doctor:
     def _init_(self, doctor_id, name, specialization):
+# Initialize a new doctor
         self.doctor_id = doctor_id
         self.name = name
         self.specialization = specialization
+#Area of specialization for the doctor
         self.appointments = []
 
 class Prescription:
     def _init_(self, medication, dosage):
+#Initialize a new prescription.
         self.medication = medication
+#Name of the prescribed medication
         self.dosage = dosage
+#Instructions regarding the amount of medicine intake
+
 
 class Appointment:
     def _init_(self, patient_id, doctor_id, date_time):
+#Initialize a new appointment.
         self.patient_id = patient_id
         self.doctor_id = doctor_id
-        self.date_time = date_time
+        self.date_time = date_time 
+#Date and time of the appointment
 
-patient_records = LinkedList()
+# Initialize data structures
+patient_records = LinkedList() 
+# Linked list to store patient records
 doctor_records = {}
+#Dicitionary for holding records of doctors by their ID, with each record being represented as a Doctor object
 consultation_queue = deque()
-
+# Queue to manage patient consultations
 
 # To push a prescription onto the stack
 def issue_prescription(patient_id, medication, dosage):
