@@ -1,300 +1,256 @@
-from collections import deque
-from datetime import datetime
+from collections import deque  # import deque for managing queues
+from datetime import datetime  # import datetime for handling dates
 
-class ListNode: # Initialize a new node for the linked list
-    def _init_(self, data=None):
-        self.data = data
-        self.next = None
+class ListNode:  # define a class for a node in a linked list
+    def __init__(self, data=None):  # initializer with optional data parameter
+        self.data = data  # store the data
+        self.next = None  # initialize next pointer to None
 
-class LinkedList: #Initialize an empty linked list
-    def _init_(self):
-        self.head = None
+class LinkedList:  # define a class for a linked list
+    def __init__(self):  # initializer for linked list
+        self.head = None  # initialize head to None
 
-    def append(self, data):
-    #Append a new node containing the given data to the end of the linked list
-        if not self.head:
-            self.head = ListNode(data)
-            print(f"Added new patient: {data.name}")
-        else:
-            current = self.head
-            while current.next:
+    def append(self, data):  # method to append data to the list
+        if not self.head:  # if list is empty
+            self.head = ListNode(data)  # create new node as head
+            print(f"Added new patient: {data.name}")  # print confirmation
+        else:  # if list is not empty
+            current = self.head  # start from the head
+            while current.next:  # find the last node
                 current = current.next
-            current.next = ListNode(data)
-            print(f"Added new patient: {data.name}")
+            current.next = ListNode(data)  # append new node
+            print(f"Added new patient: {data.name}")  # print confirmation
 
-    def find(self, patient_id):
-    #Find a patient with the given ID in the linked list
-        current = self.head
-        while current:
-            if current.data.patient_id == patient_id:
-                return current.data
-            current = current.next
-        return None
-        #Return patient object if found, else None.
+    def find(self, patient_id):  # method to find a node by patient id
+        current = self.head  # start from the head
+        while current:  # traverse the list
+            if current.data.patient_id == patient_id:  # if id matches
+                return current.data  # return the data
+            current = current.next  # move to next node
+        return None  # return None if not found
 
-    def remove(self, patient_id):
-    #Remove a patient with the ID provided from the linked list
-        current = self.head
-        prev = None
-        while current:
-            if current.data.patient_id == patient_id:
-                if prev:
-                    prev.next = current.next
-                else:
-                    self.head = current.next
-                return True
-            prev = current
-            current = current.next
-        return False
-        # return True if the patient was removed, False otherwise.
+    def remove(self, patient_id):  # method to remove a node by patient id
+        current = self.head  # start from the head
+        prev = None  # initialize previous node as None
+        while current:  # traverse the list
+            if current.data.patient_id == patient_id:  # if id matches
+                if prev:  # if not the head node
+                    prev.next = current.next  # bypass the current node
+                else:  # if it's the head node
+                    self.head = current.next  # update head
+                return True  # return True after removal
+            prev = current  # update previous node
+            current = current.next  # move to next node
+        return False  # return False if not found
 
-class Patient:
-    def _init_(self, patient_id, name, age, medical_history, current_condition, admission_date=None):
-        #Initialize a new patient
-        self.patient_id = patient_id 
-#the unique ID for the patient.
-        self.name = name
-        self.age = age
-        self.medical_history = medical_history
-        self.current_condition = current_condition
-#Current health condition of the patient
-        self.admission_date = admission_date if admission_date else datetime.now()
-#The admission date can be entered optionally, and if left blank, it will default to the current date
-        self.prescriptions = []
-        self.appointments = []
-        self.status = "Active"
-        
+class Patient:  # define a class for patients
+    def __init__(self, patient_id, name, age, medical_history, current_condition, admission_date=None):  # initializer
+        self.patient_id = patient_id  # store patient id
+        self.name = name  # store name
+        self.age = age  # store age
+        self.medical_history = medical_history  # store medical history
+        self.current_condition = current_condition  # store current condition
+        self.admission_date = admission_date if admission_date else datetime.now()  # set admission date
+        self.prescriptions = []  # list for prescriptions
+        self.appointments = []  # list for appointments
+        self.status = "Active"  # set status as Active
 
-class Doctor:
-    def _init_(self, doctor_id, name, specialization):
-# Initialize a new doctor
-        self.doctor_id = doctor_id
-        self.name = name
-        self.specialization = specialization
-#Area of specialization for the doctor
-        self.appointments = []
+class Doctor:  # define a class for doctors
+    def __init__(self, doctor_id, name, specialization):  # initializer
+        self.doctor_id = doctor_id  # store doctor id
+        self.name = name  # store name
+        self.specialization = specialization  # store specialization
+        self.appointments = []  # list for appointments
 
-class Prescription:
-    def _init_(self, medication, dosage):
-#Initialize a new prescription.
-        self.medication = medication
-#Name of the prescribed medication
-        self.dosage = dosage
-#Instructions regarding the amount of medicine intake
+class Prescription:  # define a class for prescriptions
+    def __init__(self, medication, dosage):  # initializer
+        self.medication = medication  # store medication name
+        self.dosage = dosage  # store dosage
 
+class Appointment:  # define a class for appointments
+    def __init__(self, patient_id, doctor_id, date_time):  # initializer
+        self.patient_id = patient_id  # store patient id
+        self.doctor_id = doctor_id  # store doctor id
+        self.date_time = date_time  # store date and time
 
-class Appointment:
-    def _init_(self, patient_id, doctor_id, date_time):
-#Initialize a new appointment.
-        self.patient_id = patient_id
-        self.doctor_id = doctor_id
-        self.date_time = date_time 
-#Date and time of the appointment
+patient_records = LinkedList()  # initialize linked list for patient records
+doctor_records = {}  # dictionary for doctor records
+consultation_queue = deque()  # deque for consultation queue
 
-# Initialize data structures
-patient_records = LinkedList() 
-# Linked list to store patient records
-doctor_records = {}
-#Dicitionary for holding records of doctors by their ID, with each record being represented as a Doctor object
-consultation_queue = deque()
-# Queue to manage patient consultations
-
-# To push a prescription onto the stack
+# function to issue a prescription to a patient
 def issue_prescription(patient_id, medication, dosage):
-    patient = patient_records.find(patient_id)
-    if patient:
-        new_prescription = Prescription(medication, dosage)
-        patient.prescriptions.append(new_prescription)  # Push to stack
-        print(f"Prescription issued to {patient.name}: {medication}, {dosage}.")
-    else:
-        print(f"Patient {patient_id} not found.")
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        new_prescription = Prescription(medication, dosage)  # create prescription
+        patient.prescriptions.append(new_prescription)  # add to patient's list
+        print(f"Prescription issued to {patient.name}: {medication}, {dosage}.")  # print confirmation
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
-# To pop a prescription from the stack (let's say you want to remove the most recent prescription)
+# function to remove the latest prescription of a patient
 def remove_latest_prescription(patient_id):
-    patient = patient_records.find(patient_id)
-    if patient and patient.prescriptions:
-        last_prescription = patient.prescriptions.pop()  # Pop from stack
-        print(f"Removed latest prescription: {last_prescription.medication} for patient {patient.name}.")
-    else:
-        print(f"Patient {patient_id} not found or has no prescriptions.")
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient and patient.prescriptions:  # if patient and prescriptions exist
+        last_prescription = patient.prescriptions.pop()  # remove the latest prescription
+        print(f"Removed latest prescription: {last_prescription.medication} for patient {patient.name}.")  # print confirmation
+    else:  # if patient or prescriptions do not exist
+        print(f"Patient {patient_id} not found or has no prescriptions.")  # print error message
 
-patient_ids_array = []
+patient_ids_array = []  # list to store patient ids (not used in the provided functions)
 
-# Modify the add_patient function to add the patient ID to the array
+# function to add a new patient
 def add_patient(patient_id, name, age, medical_history, current_condition, admission_date=None):
-    global patient_ids_array
-    if len(patient_id) < 6:
-        print(f"Error: Patient ID {patient_id} must be at least 6 characters long.")
+    global patient_ids_array  # refer to the global list (though not used in appending)
+    if len(patient_id) < 6:  # check patient id length
+        print(f"Error: Patient ID {patient_id} must be at least 6 characters long.")  # print error message
         return
-    admission_date = admission_date if admission_date else datetime.now()
-    new_patient = Patient(patient_id, name, age, medical_history, current_condition, admission_date)
-    patient_records.append(new_patient)
-    # Directly append patient_id to the queue; consider sorting or priority mechanism elsewhere if needed
-    consultation_queue.append(patient_id)
-    print(f"Added Patient: ID: {patient_id}, Name: {name}, Age: {age}, Medical History: {medical_history}, Current Condition: {current_condition}, Admission Date: {admission_date.strftime('%Y-%m-%d')}")
+    admission_date = admission_date if admission_date else datetime.now()  # set admission date
+    new_patient = Patient(patient_id, name, age, medical_history, current_condition, admission_date)  # create patient
+    patient_records.append(new_patient)  # add patient to records
+    consultation_queue.append(patient_id)  # add patient id to consultation queue
+    print(f"Added Patient: ID: {patient_id}, Name: {name}, Age: {age}, Medical History: {medical_history}, Current Condition: {current_condition}, Admission Date: {admission_date.strftime('%Y-%m-%d')}")  # print confirmation
 
-
-# Define a function to update a patient's record given their ID and optional new details.
+# function to update patient information
 def update_patient(patient_id, name=None, age=None, medical_history=None, current_condition=None):
-    patient = patient_records.find(patient_id)
-    if patient:
-        updated_info = f"Updated Patient Record for {patient_id}:"
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        # update patient information if provided
         if name is not None:
-            updated_info += f" Name: {name}."
             patient.name = name
         if age is not None:
-            updated_info += f" Age: {age}."
             patient.age = age
         if medical_history is not None:
-            updated_info += f" Medical History: Diabetes,"
             patient.medical_history = medical_history
         if current_condition is not None:
-            updated_info += f" Current Condition: {current_condition}."
             patient.current_condition = current_condition
-        print(updated_info)
-    else:
-        print(f"Patient {patient_id} not found.")
+        print(f"Updated Patient Record for {patient_id}.")  # print confirmation
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
+# function to print the current consultation queue
 def print_consultation_queue():
-    print("\nCurrent Consultation Queue:")
-    for patient_id in consultation_queue:
-        print(f"- Patient ID: {patient_id}")
+    print("\nCurrent Consultation Queue:")  # print header
+    for patient_id in consultation_queue:  # iterate through patient ids in the queue
+        print(f"- Patient ID: {patient_id}")  # print each patient id
 
-
-
+# function to add a new doctor
 def add_doctor(doctor_id, name, specialization):
-    if len(doctor_id) < 6:
-        print(f"Error: Doctor ID {doctor_id} should be at least 6 characters long.")
+    if len(doctor_id) < 6:  # check doctor id length
+        print(f"Error: Doctor ID {doctor_id} should be at least 6 characters long.")  # print error message
         return
-    doctor_records[doctor_id] = Doctor(doctor_id, name, specialization)
-    print(f"Added Doctor: {name}")
+    doctor_records[doctor_id] = Doctor(doctor_id, name, specialization)  # add doctor to records
+    print(f"Added Doctor: {name}")  # print confirmation
 
+# function to schedule an appointment
 def schedule_appointment(patient_id, doctor_id, date_time):
-    patient = patient_records.find(patient_id)
-    doctor = doctor_records.get(doctor_id)
-    if patient and doctor:
-        if datetime.strptime(date_time, "%Y-%m-%d %H:%M") < datetime.now():
-            print(f"Error: Appointment time {date_time} is in the past.")
+    patient = patient_records.find(patient_id)  # find patient by id
+    doctor = doctor_records.get(doctor_id)  # find doctor by id
+    if patient and doctor:  # if both are found
+        if datetime.strptime(date_time, "%Y-%m-%d %H:%M") < datetime.now():  # check if appointment time is in the past
+            print(f"Error: Appointment time {date_time} is in the past.")  # print error message
             return
-        new_appointment = Appointment(patient_id, doctor_id, date_time)
-        patient.appointments.append(new_appointment)
-        doctor.appointments.append(new_appointment)
-        consultation_queue.append(patient_id)
-        print(f"Appointment scheduled for {patient.name} with Dr. {doctor.name} on {date_time}.")
-    else:
-        print("Appointment scheduling failed. Please check patient and doctor IDs.")
+        new_appointment = Appointment(patient_id, doctor_id, date_time)  # create appointment
+        patient.appointments.append(new_appointment)  # add appointment to patient's list
+        doctor.appointments.append(new_appointment)  # add appointment to doctor's list
+        consultation_queue.append(patient_id)  # add patient id to consultation queue
+        print(f"Appointment scheduled for {patient.name} with Dr. {doctor.name} on {date_time}.")  # print confirmation
+    else:  # if either patient or doctor is not found
+        print("Appointment scheduling failed. Please check patient and doctor IDs.")  # print error message
 
-def issue_prescription(patient_id, medication, dosage):
-    patient = patient_records.find(patient_id)
-    if patient:
-        new_prescription = Prescription(medication, dosage)
-        patient.prescriptions.append(new_prescription)
-        print(f"Prescription issued to {patient.name}: {medication}, {dosage}.")
-    else:
-        print(f"Patient {patient_id} not found.")
-        
-        
+# function to issue prescription (duplicated, only one definition should be used)
 
+# function to search and print patient summary
 def search_patient_summary(patient_id):
-    patient = patient_records.find(patient_id)
-    if patient:
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        # prepare summaries of prescriptions and appointments
         prescriptions_summary = ', '.join([f"{pres.medication} ({pres.dosage})" for pres in patient.prescriptions])
         appointments_summary = ', '.join([f"Appointment with Dr. {doctor_records[app.doctor_id].name} on {app.date_time}" for app in patient.appointments])
-        print(f"--- Patient Summary ---\nID: {patient_id}, Name: {patient.name}, Age: {patient.age}, Medical History: {patient.medical_history}, Current Condition: {patient.current_condition}, Prescriptions: {prescriptions_summary}, Appointments: {appointments_summary}")
-    else:
-        print(f"Patient {patient_id} not found.")
+        print(f"--- Patient Summary ---\nID: {patient_id}, Name: {patient.name}, Age: {patient.age}, Medical History: {patient.medical_history}, Current Condition: {patient.current_condition}, Prescriptions: {prescriptions_summary}, Appointments: {appointments_summary}")  # print patient summary
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
-
+# function to print all patient records
 def print_patient_records():
-    print("\nPatient Records:")
-    current = patient_records.head
-    while current:
-        patient = current.data  # Access the patient object stored in 'data'
+    print("\nPatient Records:")  # print header
+    current = patient_records.head  # start from head of the list
+    while current:  # iterate through the list
+        patient = current.data  # get patient data
+        # print patient details
         print(f"ID: {patient.patient_id}, Name: {patient.name}, Age: {patient.age}, Medical History: {patient.medical_history}, Current Condition: {patient.current_condition}, Status: {patient.status}, Admission Date: {patient.admission_date.strftime('%Y-%m-%d')}")
-        current = current.next
+        current = current.next  # move to next node
 
-
-
+# function to discharge a patient
 def discharge_patient(patient_id):
-    global consultation_queue
-    patient = patient_records.find(patient_id)
-    if patient:
-        patient.status = "Discharged"  # Update patient status
-        patient.current_condition = "Discharged"
-        print(f"Patient {patient_id} discharged.")
-        # After updating patient status, remove them from the consultation queue
-        consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])
-        print_updated_queue()
-    else:
-        print(f"Patient {patient_id} not found.")
+    global consultation_queue  # refer to the global consultation queue
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        patient.status = "Discharged"  # update status to Discharged
+        patient.current_condition = "Discharged"  # update current condition to Discharged
+        print(f"Patient {patient_id} discharged.")  # print confirmation
+        consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])  # update queue by removing patient id
+        print_updated_queue()  # print updated queue
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
-
+# function to remove a patient
 def remove_patient(patient_id):
-    global consultation_queue
-    patient = patient_records.find(patient_id)
-    if patient:
-        # Remove the patient from the patient records (your existing logic seems to handle this)
-        if patient_records.remove(patient_id):
-            print(f"Patient {patient_id} successfully removed.")
-            consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])
-            print_updated_queue()
-        else:
-            print(f"Error removing patient {patient_id}.")
-    else:
-        print(f"Patient {patient_id} not found.")
+    global consultation_queue  # refer to the global consultation queue
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        if patient_records.remove(patient_id):  # remove patient from records
+            print(f"Patient {patient_id} successfully removed.")  # print confirmation
+            consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])  # update queue by removing patient id
+            print_updated_queue()  # print updated queue
+        else:  # if removal failed
+            print(f"Error removing patient {patient_id}.")  # print error message
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
+# function to transfer a patient
 def transfer_patient(patient_id):
-    global consultation_queue
-    patient = patient_records.find(patient_id)
-    if patient:
-        patient.status = "Transferred"
-        patient.current_condition = "Transferred to another facility"
-        print(f"Patient {patient_id} transferred to another facility.")
-        consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])
-        print_updated_queue()
-    else:
-        print(f"Patient {patient_id} not found.")
+    global consultation_queue  # refer to the global consultation queue
+    patient = patient_records.find(patient_id)  # find patient by id
+    if patient:  # if patient is found
+        patient.status = "Transferred"  # update status to Transferred
+        patient.current_condition = "Transferred to another facility"  # update current condition
+        print(f"Patient {patient_id} transferred to another facility.")  # print confirmation
+        consultation_queue = deque([p_id for p_id in consultation_queue if p_id != patient_id])  # update queue by removing patient id
+        print_updated_queue()  # print updated queue
+    else:  # if patient is not found
+        print(f"Patient {patient_id} not found.")  # print error message
 
-
-
-
-
-
-
+# dictionary of authorized users
 authorized_users = {'DrSmith': 'doctor', 'NurseJoy': 'nurse', 'Dr. Ali Al-Sayed': 'doctor'}
 
+# function to check user authorization
 def is_authorized(user, action):
     return authorized_users.get(user) == 'doctor' or \
-           (authorized_users.get(user) == 'nurse' and action not in ['add_patient', 'remove_patient'])
+        (authorized_users.get(user) == 'nurse' and action not in ['add_patient', 'remove_patient'])  # check if user is authorized for the action
 
-
-
+# function to print the updated consultation queue
 def print_updated_queue():
-    print("\nUpdated Consultation Queue:")
-    for patient_id in consultation_queue:
-        patient = patient_records.find(patient_id)
-        if patient:
-            print(f"- Patient ID: {patient.patient_id}, Name: {patient.name}, Admission Date: {patient.admission_date.strftime('%Y-%m-%d')}, Condition: {patient.current_condition}")
-        else:
-            print(f"- Patient ID: {patient_id} not found.")
+    print("\nUpdated Consultation Queue:")  # print header
+    for patient_id in consultation_queue:  # iterate through patient ids in the queue
+        patient = patient_records.find(patient_id)  # find patient by id
+        if patient:  # if patient is found
+            print(f"- Patient ID: {patient.patient_id}, Name: {patient.name}, Admission Date: {patient.admission_date.strftime('%Y-%m-%d')}, Condition: {patient.current_condition}")  # print patient details in the queue
+        else:  # if patient is not found
+            print(f"- Patient ID: {patient_id} not found.")  # print error message
 
-
-
-
-
-# Incorporating the test cases as per your request
-# Note: Adjust the date_time in schedule_appointment to future dates as needed
-
-# Adjusted Test Cases with Consistent Patient IDs
+# test cases and usage examples
 print("\nAuthorization Check: ")
 add_doctor("D00200", "Dr. Ali Al-Sayed", "Cardiology")
 
 print("\nAdding Patients:")
-add_patient("P00600", "Mariam Al-Mansoori", 40, "Hypertension", "Regular check-up due to family history", datetime.strptime("2024-03-20", "%Y-%m-%d"))
-add_patient("P00700", "Khalid Al-Rashid", 37, "Diabetes", "Experiencing frequent headaches", datetime.strptime("2024-03-22", "%Y-%m-%d"))
+add_patient("P00600", "Mariam Al-Mansoori", 40, "Hypertension", "Regular check-up due to family history",
+            datetime.strptime("2024-03-20", "%Y-%m-%d"))
+add_patient("P00700", "Khalid Al-Rashid", 37, "Diabetes", "Experiencing frequent headaches",
+            datetime.strptime("2024-03-22", "%Y-%m-%d"))
 
 print("\nUpdating Patient Record:")
-update_patient("P00700", name="Khalid Bin Al-Rashid", medical_history="Diabetes, Hypertension", current_condition="Hypertension under control, experiencing less frequent headaches")
+update_patient("P00700", name="Khalid Bin Al-Rashid", medical_history="Diabetes, Hypertension",
+               current_condition="Hypertension under control, experiencing less frequent headaches")
 
 print("\nProcessing Consultation Queue:")
 while consultation_queue:
@@ -319,7 +275,6 @@ for patient_id in ["P00600", "P00700"]:
 
 print("\nRemoving Patient:")
 remove_patient("P00700")
-
 
 print("\nAdding another patient to the queue for demonstration:")
 add_patient("P00800", "Ahmed Al-Farsi", 30, "Mild fever", "Recovery", datetime.now())
