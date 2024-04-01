@@ -1,0 +1,230 @@
+from collections import deque
+from datetime import datetime
+
+class ListNode:
+    def __init__(self, data=None):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        if not self.head:
+            self.head = ListNode(data)
+            print(f"Added new patient: {data.name}")
+        else:
+            current = self.head
+            while current.next:
+                current = current.next
+            current.next = ListNode(data)
+            print(f"Added new patient: {data.name}")
+
+    def find(self, patient_id):
+        current = self.head
+        while current:
+            if current.data.patient_id == patient_id:
+                return current.data
+            current = current.next
+        return None
+
+    def remove(self, patient_id):
+        current = self.head
+        prev = None
+        while current:
+            if current.data.patient_id == patient_id:
+                if prev:
+                    prev.next = current.next
+                else:
+                    self.head = current.next
+                print(f"Patient {patient_id} successfully removed.")
+                return True
+            prev = current
+            current = current.next
+        print(f"Patient {patient_id} not found.")
+        return False
+
+class Patient:
+    def __init__(self, patient_id, name, age, medical_history, current_condition, admission_date=None):
+        self.patient_id = patient_id
+        self.name = name
+        self.age = age
+        self.medical_history = medical_history
+        self.current_condition = current_condition
+        self.admission_date = admission_date if admission_date else datetime.now()
+        self.prescriptions = []
+        self.appointments = []
+        self.status = "Active"
+
+class Doctor:
+    def __init__(self, doctor_id, name, specialization):
+        self.doctor_id = doctor_id
+        self.name = name
+        self.specialization = specialization
+        self.appointments = []
+
+class Prescription:
+    def __init__(self, medication, dosage):
+        self.medication = medication
+        self.dosage = dosage
+
+class Appointment:
+    def __init__(self, patient_id, doctor_id, date_time):
+        self.patient_id = patient_id
+        self.doctor_id = doctor_id
+        self.date_time = date_time
+
+patient_records = LinkedList()
+doctor_records = {}
+consultation_queue = deque()
+
+def add_patient():
+    patient_id = input("Enter Patient ID: ")
+    name = input("Enter Patient Name: ")
+    age = input("Enter Patient Age: ")
+    medical_history = input("Enter Medical History: ")
+    current_condition = input("Enter Current Condition: ")
+    admission_date = input("Enter Admission Date (YYYY-MM-DD), leave blank for today: ")
+    admission_date = datetime.strptime(admission_date, "%Y-%m-%d") if admission_date else datetime.now()
+    if len(patient_id) < 6:
+        print("Error: Patient ID must be at least 6 characters long.")
+        return
+    new_patient = Patient(patient_id, name, int(age), medical_history, current_condition, admission_date)
+    patient_records.append(new_patient)
+    consultation_queue.append(patient_id)
+    print(f"Added Patient: ID: {patient_id}, Name: {name}")
+
+def manage_patients():
+    while True:
+        print("\n--- Patient Management ---")
+        print("1. Add New Patient")
+        print("2. Return to Main Menu")
+        choice = input("Select an option: ")
+        if choice == "1":
+            add_patient()
+        elif choice == "2":
+            break
+        else:
+            print("Invalid selection. Please try again.")
+
+def add_doctor():
+    doctor_id = input("Enter Doctor ID: ")
+    name = input("Enter Doctor Name: ")
+    specialization = input("Enter Specialization: ")
+    if len(doctor_id) < 6:
+        print("Error: Doctor ID must be at least 6 characters long.")
+        return
+    new_doctor = Doctor(doctor_id, name, specialization)
+    doctor_records[doctor_id] = new_doctor
+    print(f"Added Doctor: ID: {doctor_id}, Name: {name}")
+
+def manage_doctors():
+    while True:
+        print("\n--- Doctor Management ---")
+        print("1. Add New Doctor")
+        print("2. Return to Main Menu")
+        choice = input("Select an option: ")
+        if choice == "1":
+            add_doctor()
+        elif choice == "2":
+            break
+        else:
+            print("Invalid selection. Please try again.")
+
+def schedule_appointment():
+    patient_id = input("Enter Patient ID for the appointment: ")
+    doctor_id = input("Enter Doctor ID for the appointment: ")
+    date_time = input("Enter Appointment Date and Time (YYYY-MM-DD HH:MM): ")
+    patient = patient_records.find(patient_id)
+    doctor = doctor_records.get(doctor_id)
+    if not patient or not doctor:
+        print("Error: Invalid patient or doctor ID.")
+        return
+    try:
+        date_time = datetime.strptime(date_time, "%Y-%m-%d %H:%M")
+    except ValueError:
+        print("Error: Invalid date format.")
+        return
+    new_appointment = Appointment(patient_id, doctor_id, date_time)
+    patient.appointments.append(new_appointment)
+    doctor.appointments.append(new_appointment)
+    print(f"Appointment scheduled for {patient.name} with Dr. {doctor.name} on {date_time}.")
+
+def manage_appointments():
+    while True:
+        print("\n--- Appointment Management ---")
+        print("1. Schedule New Appointment")
+        print("2. Return to Main Menu")
+        choice = input("Select an option: ")
+        if choice == "1":
+            schedule_appointment()
+        elif choice == "2":
+            break
+        else:
+            print("Invalid selection. Please try again.")
+
+def issue_prescription():
+    patient_id = input("Enter Patient ID to issue a prescription: ")
+    medication = input("Enter Medication Name: ")
+    dosage = input("Enter Dosage: ")
+    patient = patient_records.find(patient_id)
+    if not patient:
+        print("Error: Invalid patient ID.")
+        return
+    new_prescription = Prescription(medication, dosage)
+    patient.prescriptions.append(new_prescription)
+    print(f"Prescription issued to {patient.name}: {medication}, {dosage}.")
+
+def manage_prescriptions():
+    while True:
+        print("\n--- Prescription Management ---")
+        print("1. Issue New Prescription")
+        print("2. Return to Main Menu")
+        choice = input("Select an option: ")
+        if choice == "1":
+            issue_prescription()
+        elif choice == "2":
+            break
+        else:
+            print("Invalid selection. Please try again.")
+
+def process_consultations():
+    print("\nProcessing Consultation Queue:")
+    while consultation_queue:
+        current_patient_id = consultation_queue.popleft()
+        patient = patient_records.find(current_patient_id)
+        if patient:
+            print(f"Consulting patient ID: {current_patient_id} - {patient.name}")
+        else:
+            print(f"Patient ID: {current_patient_id} not found.")
+    print("All consultations processed.")
+
+def main_menu():
+    while True:
+        print("\n--- Main Menu ---")
+        print("1. Manage Patients")
+        print("2. Manage Doctors")
+        print("3. Manage Appointments")
+        print("4. Manage Prescriptions")
+        print("5. Process Consultations")
+        print("6. Exit")
+        choice = input("Select an option: ")
+        if choice == "1":
+            manage_patients()
+        elif choice == "2":
+            manage_doctors()
+        elif choice == "3":
+            manage_appointments()
+        elif choice == "4":
+            manage_prescriptions()
+        elif choice == "5":
+            process_consultations()
+        elif choice == "6":
+            print("Exiting the system. Goodbye!")
+            break
+        else:
+            print("Invalid selection. Please try again.")
+
+if __name__ == "__main__":
+    main_menu()
