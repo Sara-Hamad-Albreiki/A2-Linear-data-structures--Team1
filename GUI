@@ -80,6 +80,9 @@ doctor_records = {}
 consultation_queue = deque()
 
 def add_patient():
+# Function to add a new patient
+    # Includes prompts for user input and validation
+    # Appends the patient to the patient_records linked list
     patient_id = input("Enter Patient ID: ")
     name = input("Enter Patient Name: ")
     age = input("Enter Patient Age: ")
@@ -96,6 +99,8 @@ def add_patient():
     print(f"Added Patient: ID: {patient_id}, Name: {name}")
 
 def manage_patients():
+ # Function to provide options for patient management
+    # Allows adding new patients and returning to the main menu
     while True:
         print("\n--- Patient Management ---")
         print("1. Add New Patient")
@@ -109,6 +114,9 @@ def manage_patients():
             print("Invalid selection. Please try again.")
 
 def add_doctor():
+# Function to add a new doctor
+    # Includes prompts for user input and validation
+    # Adds the doctor to the doctor_records dictionary
     doctor_id = input("Enter Doctor ID: ")
     name = input("Enter Doctor Name: ")
     specialization = input("Enter Specialization: ")
@@ -120,6 +128,8 @@ def add_doctor():
     print(f"Added Doctor: ID: {doctor_id}, Name: {name}")
 
 def manage_doctors():
+# Function to provide options for doctor management
+    # Allows adding new doctors and returning to the main menu
     while True:
         print("\n--- Doctor Management ---")
         print("1. Add New Doctor")
@@ -133,6 +143,9 @@ def manage_doctors():
             print("Invalid selection. Please try again.")
 
 def schedule_appointment():
+ # Function to schedule a new appointment
+    # Includes prompts for user input and validation
+    # Adds the appointment to the patient's and doctor's lists
     patient_id = input("Enter Patient ID for the appointment: ")
     doctor_id = input("Enter Doctor ID for the appointment: ")
     date_time = input("Enter Appointment Date and Time (YYYY-MM-DD HH:MM): ")
@@ -152,6 +165,8 @@ def schedule_appointment():
     print(f"Appointment scheduled for {patient.name} with Dr. {doctor.name} on {date_time}.")
 
 def manage_appointments():
+# Function to provide options for appointment management
+# Allows scheduling new appointments and returning to the main menu
     while True:
         print("\n--- Appointment Management ---")
         print("1. Schedule New Appointment")
@@ -165,6 +180,9 @@ def manage_appointments():
             print("Invalid selection. Please try again.")
 
 def issue_prescription():
+# Function to issue a new prescription to a patient
+# Includes prompts for user input and validation
+# Adds the prescription to the patient's list
     patient_id = input("Enter Patient ID to issue a prescription: ")
     medication = input("Enter Medication Name: ")
     dosage = input("Enter Dosage: ")
@@ -177,6 +195,8 @@ def issue_prescription():
     print(f"Prescription issued to {patient.name}: {medication}, {dosage}.")
 
 def manage_prescriptions():
+# Function to provide options for prescription management
+# Allows issuing new prescriptions and returning to the main menu
     while True:
         print("\n--- Prescription Management ---")
         print("1. Issue New Prescription")
@@ -190,6 +210,8 @@ def manage_prescriptions():
             print("Invalid selection. Please try again.")
 
 def process_consultations():
+ # Function to process consultations from the queue
+# Consultations are dequeued and processed
     print("\nProcessing Consultation Queue:")
     while consultation_queue:
         current_patient_id = consultation_queue.popleft()
@@ -200,7 +222,9 @@ def process_consultations():
             print(f"Patient ID: {current_patient_id} not found.")
     print("All consultations processed.")
 
-def main_menu():
+def main_menu(): 
+ # Main function providing the application's main menu
+# Allows navigation to various management options and exits the application
     while True:
         print("\n--- Main Menu ---")
         print("1. Manage Patients")
