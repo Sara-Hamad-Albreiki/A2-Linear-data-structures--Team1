@@ -134,7 +134,7 @@ def add_patient(patient_id, name, age, medical_history, current_condition, admis
     print(f"Added Patient: ID: {patient_id}, Name: {name}, Age: {age}, Medical History: {medical_history}, Current Condition: {current_condition}, Admission Date: {admission_date.strftime('%Y-%m-%d')}")
 
 
-
+# Define a function to update a patient's record given their ID and optional new details.
 def update_patient(patient_id, name=None, age=None, medical_history=None, current_condition=None):
     patient = patient_records.find(patient_id)
     if patient:
