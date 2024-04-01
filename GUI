@@ -2,15 +2,18 @@ from collections import deque
 from datetime import datetime
 
 class ListNode:
+#Initialize a new ListNode instance
     def __init__(self, data=None):
         self.data = data
         self.next = None
 
 class LinkedList:
+#Initialize a new LinkedList instance
     def __init__(self):
         self.head = None
 
     def append(self, data):
+#Add a new ListNode with the given data to the end of the linked list
         if not self.head:
             self.head = ListNode(data)
             print(f"Added new patient: {data.name}")
@@ -22,14 +25,17 @@ class LinkedList:
             print(f"Added new patient: {data.name}")
 
     def find(self, patient_id):
+#Search the linked list for a ListNode with the given patient ID
         current = self.head
         while current:
             if current.data.patient_id == patient_id:
                 return current.data
             current = current.next
         return None
+#A ListNode containing the matching patient data or None if not found
 
     def remove(self, patient_id):
+#Remove a ListNode with the given patient ID from the linked list
         current = self.head
         prev = None
         while current:
@@ -44,15 +50,18 @@ class LinkedList:
             current = current.next
         print(f"Patient {patient_id} not found.")
         return False
+#True if a node was removed, False otherwise
+
 
 class Patient:
     def __init__(self, patient_id, name, age, medical_history, current_condition, admission_date=None):
+#Initialize a new Patient instance
         self.patient_id = patient_id
         self.name = name
         self.age = age
         self.medical_history = medical_history
         self.current_condition = current_condition
-        self.admission_date = admission_date if admission_date else datetime.now()
+        self.admission_date = admission_date if admission_date else datetime.now() 
         self.prescriptions = []
         self.appointments = []
         self.status = "Active"
@@ -75,8 +84,13 @@ class Appointment:
         self.doctor_id = doctor_id
         self.date_time = date_time
 
+# Create an empty linked list for patient records
 patient_records = LinkedList()
+
+# Create an empty dictionary for doctor records
 doctor_records = {}
+
+# Create an empty deque for the consultation queue
 consultation_queue = deque()
 
 def add_patient():
